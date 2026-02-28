@@ -3,6 +3,8 @@ const STORAGE_KEYS = {
   questionStats: "pokemon.questionStats.v1",
   adminSettings: "pokemon.admin.settings.v1",
   adminStats: "pokemon.admin.stats.v1",
+  backgroundChoice: "pokemon.ui.background.v1",
+  panelStyle: "pokemon.ui.panelStyle.v1",
 };
 const POKEAPI_BASE = "https://pokeapi.co/api/v2/pokemon";
 const SPRITE_ORIGEN_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
@@ -15,8 +17,17 @@ const ADMIN_PASSWORD = "admin123";
 const CAT_SOUND_FILES = [
   "pokemon/cat-1.mp3",
   "pokemon/cat-2.mp3",
-  "pokemon/cat-3.mp3",
 ];
+const BACKGROUND_PRESETS = {
+  bg1: "pokemon/background-1.png",
+  bg2: "pokemon/background-2.jpg",
+  bg3: "pokemon/background-3.jpg",
+  bg4: "pokemon/background-4.png",
+  bg5: "pokemon/background-5.png",
+  bg6: "pokemon/background-6.png",
+  bg7: "pokemon/background-7.png",
+  bg8: "pokemon/background-8.png",
+};
 const DEFAULT_ADMIN_SETTINGS = {
   missingnoEnabled: true,
   eggEnabled: true,
@@ -25,6 +36,10 @@ const DEFAULT_ADMIN_STATS = {
   gamesFinished: 0,
   missingnoTriggered: 0,
   eggTriggered: 0,
+};
+const DEFAULT_PANEL_STYLE = {
+  color: "#fffdf8",
+  opacity: 95,
 };
 
 const BASE_POKEMON = [
@@ -86,6 +101,14 @@ const BASE_RASGO_BY_NAME = {
 };
 
 const els = {
+  btnOpenAppearance: document.getElementById("btnOpenAppearance"),
+  appearanceModal: document.getElementById("appearanceModal"),
+  btnCloseAppearance: document.getElementById("btnCloseAppearance"),
+  bgSelect: document.getElementById("bgSelect"),
+  panelColor: document.getElementById("panelColor"),
+  panelOpacity: document.getElementById("panelOpacity"),
+  panelOpacityValue: document.getElementById("panelOpacityValue"),
+  btnResetPanelStyle: document.getElementById("btnResetPanelStyle"),
   btnAdminLogin: document.getElementById("btnAdminLogin"),
   adminPanel: document.getElementById("adminPanel"),
   chkMissingnoEnabled: document.getElementById("chkMissingnoEnabled"),
@@ -155,6 +178,7 @@ const state = {
   gameFinishedCounted: false,
   forceMissingnoNextFinish: false,
   forceEggNextFinish: false,
+  panelStyle: { ...DEFAULT_PANEL_STYLE },
 };
 
 function normalizeText(str, fallback = "") {
@@ -275,6 +299,100 @@ function readJson(key, fallback) {
 
 function writeJson(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function normalizeHexColor(value) {
+  const v = String(value || "").trim();
+  const valid = /^#[0-9a-fA-F]{6}$/.test(v);
+  return valid ? v.toLowerCase() : DEFAULT_PANEL_STYLE.color;
+}
+
+function hexToRgb(hex) {
+  const normalized = normalizeHexColor(hex);
+  return {
+    r: parseInt(normalized.slice(1, 3), 16),
+    g: parseInt(normalized.slice(3, 5), 16),
+    b: parseInt(normalized.slice(5, 7), 16),
+  };
+}
+
+function normalizePanelStyle(raw) {
+  const color = normalizeHexColor(raw?.color);
+  const opacityNum = Number(raw?.opacity);
+  const opacity = Number.isFinite(opacityNum) ? clamp(Math.round(opacityNum), 0, 100) : DEFAULT_PANEL_STYLE.opacity;
+  return { color, opacity };
+}
+
+function applyPanelStyle(rawStyle) {
+  const style = normalizePanelStyle(rawStyle);
+  state.panelStyle = style;
+
+  const rgb = hexToRgb(style.color);
+  const alpha = style.opacity / 100;
+  const borderAlpha = Math.min(1, alpha + 0.2);
+  const shadowAlpha = Math.min(0.32, 0.08 + (alpha * 0.24));
+
+  document.documentElement.style.setProperty("--panel-bg", `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha.toFixed(2)})`);
+  document.documentElement.style.setProperty("--panel-border-color", `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${borderAlpha.toFixed(2)})`);
+  document.documentElement.style.setProperty("--panel-shadow", `0 10px 25px rgba(0, 0, 0, ${shadowAlpha.toFixed(2)})`);
+
+  if (els.panelColor) {
+    els.panelColor.value = style.color;
+  }
+  if (els.panelOpacity) {
+    els.panelOpacity.value = String(style.opacity);
+  }
+  if (els.panelOpacityValue) {
+    els.panelOpacityValue.textContent = `${style.opacity}%`;
+  }
+
+  return style;
+}
+
+function loadPanelStyle() {
+  const saved = readJson(STORAGE_KEYS.panelStyle, DEFAULT_PANEL_STYLE);
+  applyPanelStyle(saved);
+}
+
+function persistCurrentPanelStyle() {
+  writeJson(STORAGE_KEYS.panelStyle, state.panelStyle);
+}
+
+function applyBackgroundChoice(choice) {
+  document.body.classList.remove("has-custom-bg");
+  document.body.style.removeProperty("--custom-bg-url");
+
+  const presetUrl = BACKGROUND_PRESETS[choice];
+  if (presetUrl) {
+    document.body.style.setProperty("--custom-bg-url", `url("${presetUrl}")`);
+    document.body.classList.add("has-custom-bg");
+    return choice;
+  }
+
+  return "default";
+}
+
+function loadBackgroundChoice() {
+  const saved = localStorage.getItem(STORAGE_KEYS.backgroundChoice) || "default";
+  const applied = applyBackgroundChoice(saved);
+
+  if (els.bgSelect) {
+    els.bgSelect.value = applied;
+  }
+}
+
+function openAppearanceModal() {
+  if (!els.appearanceModal) return;
+  els.appearanceModal.classList.remove("hidden");
+}
+
+function closeAppearanceModal() {
+  if (!els.appearanceModal) return;
+  els.appearanceModal.classList.add("hidden");
 }
 
 function loadAdminState() {
@@ -984,6 +1102,57 @@ async function saveLearnedPokemon(ev) {
 }
 
 function wireEvents() {
+  if (els.btnOpenAppearance) {
+    els.btnOpenAppearance.addEventListener("click", openAppearanceModal);
+  }
+  if (els.btnCloseAppearance) {
+    els.btnCloseAppearance.addEventListener("click", closeAppearanceModal);
+  }
+  if (els.appearanceModal) {
+    els.appearanceModal.addEventListener("click", (ev) => {
+      if (ev.target === els.appearanceModal) {
+        closeAppearanceModal();
+      }
+    });
+  }
+
+  if (els.bgSelect) {
+    els.bgSelect.addEventListener("change", () => {
+      const applied = applyBackgroundChoice(els.bgSelect.value);
+      localStorage.setItem(STORAGE_KEYS.backgroundChoice, applied);
+      if (els.bgSelect.value !== applied) {
+        els.bgSelect.value = applied;
+      }
+    });
+  }
+
+  if (els.panelColor) {
+    els.panelColor.addEventListener("input", () => {
+      applyPanelStyle({
+        color: els.panelColor.value,
+        opacity: Number(els.panelOpacity?.value || DEFAULT_PANEL_STYLE.opacity),
+      });
+      persistCurrentPanelStyle();
+    });
+  }
+
+  if (els.panelOpacity) {
+    els.panelOpacity.addEventListener("input", () => {
+      applyPanelStyle({
+        color: els.panelColor?.value || DEFAULT_PANEL_STYLE.color,
+        opacity: Number(els.panelOpacity.value),
+      });
+      persistCurrentPanelStyle();
+    });
+  }
+
+  if (els.btnResetPanelStyle) {
+    els.btnResetPanelStyle.addEventListener("click", () => {
+      applyPanelStyle(DEFAULT_PANEL_STYLE);
+      persistCurrentPanelStyle();
+    });
+  }
+
   els.btnAdminLogin.addEventListener("click", () => {
     if (state.isAdmin) {
       logoutAdmin();
@@ -1001,6 +1170,7 @@ function wireEvents() {
   document.addEventListener("keydown", (ev) => {
     if (ev.key === "Escape") {
       closeAdminLoginModal();
+      closeAppearanceModal();
     }
   });
   els.chkMissingnoEnabled.addEventListener("change", () => {
@@ -1048,6 +1218,8 @@ function wireEvents() {
 }
 
 function init() {
+  loadBackgroundChoice();
+  loadPanelStyle();
   loadAdminState();
   loadData();
   buildQuestions();

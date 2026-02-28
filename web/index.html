@@ -11,7 +11,22 @@
     <header class="hero">
       <div class="hero-top">
         <h1>Adivina el Pokemon</h1>
-        <button id="btnAdminLogin" class="btn btn-ghost">Iniciar sesion</button>
+        <div class="hero-controls">
+          <button id="btnOpenAppearance" class="btn btn-ghost">Configuracion</button>
+          <label class="bg-picker-label" for="bgSelect">Fondo</label>
+          <select id="bgSelect" class="bg-picker">
+            <option value="default">Predeterminado</option>
+            <option value="bg1">Fondo 1</option>
+            <option value="bg2">Fondo 2</option>
+            <option value="bg3">Fondo 3</option>
+            <option value="bg4">Fondo 4</option>
+            <option value="bg5">Fondo 5</option>
+            <option value="bg6">Fondo 6</option>
+            <option value="bg7">Fondo 7</option>
+            <option value="bg8">Fondo 8</option>
+          </select>
+          <button id="btnAdminLogin" class="btn btn-ghost">Iniciar sesion</button>
+        </div>
       </div>
       <p>Preguntas inteligentes + aprendizaje</p>
     </header>
@@ -122,6 +137,25 @@
           <button type="button" id="btnAdminCancel" class="btn btn-ghost">Cancelar</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div id="appearanceModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <h3>Configuracion de Apariencia</h3>
+      <div class="appearance-grid">
+        <label>Color paneles
+          <input id="panelColor" type="color" value="#fffdf8">
+        </label>
+        <label>Transparencia paneles
+          <input id="panelOpacity" type="range" min="0" max="100" value="95">
+        </label>
+        <p class="hint">Visibilidad: <strong id="panelOpacityValue">95%</strong></p>
+        <div class="actions">
+          <button id="btnResetPanelStyle" class="btn btn-ghost" type="button">Restablecer paneles</button>
+          <button id="btnCloseAppearance" class="btn btn-primary" type="button">Cerrar</button>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -1,6 +1,9 @@
 :root {
   --bg: #f7f3e9;
   --card: #fffdf8;
+  --panel-bg: rgba(255, 253, 248, 0.95);
+  --panel-border-color: rgba(229, 220, 199, 0.95);
+  --panel-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   --text: #1d1d1d;
   --muted: #6b6b6b;
   --primary: #d32f2f;
@@ -24,6 +27,19 @@ body {
     radial-gradient(circle at 70% 80%, #d9ecff 0, transparent 38%),
     var(--bg);
   min-height: 100vh;
+}
+
+body.has-custom-bg {
+  background:
+    linear-gradient(rgba(10, 12, 18, 0.58), rgba(10, 12, 18, 0.58)),
+    var(--custom-bg-url, none) center center / cover fixed no-repeat;
+}
+
+.has-custom-bg .hero,
+.has-custom-bg .hero p,
+.has-custom-bg .hero h1,
+.has-custom-bg .bg-picker-label {
+  color: #fff;
 }
 
 body.glitch-active {
@@ -103,6 +119,27 @@ body.glitch-active::before {
   gap: 12px;
 }
 
+.hero-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bg-picker-label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.bg-picker {
+  border: 1px solid #cfc7b1;
+  border-radius: 9px;
+  background: #fff;
+  color: #222;
+  padding: 7px 10px;
+  font-size: 0.9rem;
+}
+
 .hero h1 {
   margin: 0;
   font-size: clamp(1.7rem, 3vw, 2.3rem);
@@ -114,12 +151,13 @@ body.glitch-active::before {
 }
 
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border-color);
   border-radius: 16px;
   padding: 18px;
   margin-top: 14px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(4px);
 }
 
 .card h2 {
@@ -205,6 +243,11 @@ body.glitch-active::before {
   gap: 8px;
 }
 
+.appearance-grid {
+  display: grid;
+  gap: 10px;
+}
+
 .admin-stats {
   margin-top: 10px;
 }
@@ -242,10 +285,11 @@ body.glitch-active::before {
 .modal-card {
   width: 100%;
   max-width: 420px;
-  background: #fff;
+  background: var(--panel-bg);
   border-radius: 14px;
   padding: 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--panel-border-color);
+  backdrop-filter: blur(4px);
 }
 
 .modal-card h3 {
@@ -320,6 +364,16 @@ input {
 }
 
 @media (max-width: 560px) {
+  .hero-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-controls {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
   .card {
     padding: 14px;
   }

@@ -2,6 +2,9 @@
 
 Esta carpeta contiene una version web del juego.
 
+- Incluye selector de fondo con varias opciones (predeterminado + fondos personalizados).
+- La personalizacion de paneles (color/transparencia) se abre desde el boton `Configuracion` y se guarda en `localStorage`.
+
 ## Ejecutar
 
 Opcion 1: abrir directamente `web/index.html` en el navegador.
@@ -29,6 +32,6 @@ Luego abre `http://localhost:8080`.
 - Evento especial: al terminar una partida hay `1/20` de probabilidad de que aparezca `MissingNo`.
 - Para ese evento se usan `web/pokemon/missingno.png` y `web/pokemon/missingno-theme.mp3`.
 - Evento huevo: al terminar una partida hay `1/50` de probabilidad de activar un huevo en la esquina inferior derecha.
-- Usa `web/pokemon/egg.png` + `web/pokemon/egg-theme.mp3`, reproduce un maullido aleatorio de `web/pokemon/cat-1.mp3`, `web/pokemon/cat-2.mp3` o `web/pokemon/cat-3.mp3` y arranca un contador de `10:00`.
+- Usa `web/pokemon/egg.png` + `web/pokemon/egg-theme.mp3`, reproduce un maullido aleatorio de `web/pokemon/cat-1.mp3` o `web/pokemon/cat-2.mp3` y arranca un contador de `10:00`.
 - Si haces click en la imagen del huevo, suena otro maullido aleatorio desde cualquier pantalla.
 - Al llegar a `00:00` muestra el texto: `left home due to happiness.`
