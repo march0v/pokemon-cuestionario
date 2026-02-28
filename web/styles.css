@@ -1,0 +1,267 @@
+:root {
+  --bg: #f7f3e9;
+  --card: #fffdf8;
+  --text: #1d1d1d;
+  --muted: #6b6b6b;
+  --primary: #d32f2f;
+  --primary-hover: #b71c1c;
+  --secondary: #1565c0;
+  --secondary-hover: #0d47a1;
+  --border: #e5dcc7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 15% 20%, #ffe8b3 0, transparent 30%),
+    radial-gradient(circle at 85% 15%, #ffd4d4 0, transparent 32%),
+    radial-gradient(circle at 70% 80%, #d9ecff 0, transparent 38%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 3vw, 2.3rem);
+}
+
+.hero p {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.card h2 {
+  margin: 0 0 14px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.98rem;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: var(--secondary-hover);
+}
+
+.btn-ghost {
+  background: #ece6d6;
+  color: #3d3d3d;
+}
+
+.btn-ghost:hover {
+  background: #e2dac6;
+}
+
+.hint {
+  color: var(--muted);
+  margin: 12px 0 0;
+}
+
+#resultText {
+  white-space: pre-line;
+}
+
+.hidden {
+  display: none;
+}
+
+.egg-event {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  width: 190px;
+  background: rgba(20, 20, 20, 0.9);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
+  padding: 10px;
+  z-index: 9999;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.32);
+}
+
+.admin-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-stats {
+  margin-top: 10px;
+}
+
+.admin-stats p {
+  margin: 6px 0;
+}
+
+#questionStatsView {
+  background: #f3ecdc;
+  border: 1px solid #ddd2ba;
+  border-radius: 8px;
+  padding: 8px;
+  margin-top: 8px;
+  max-height: 180px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 10000;
+  padding: 16px;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid #ddd;
+}
+
+.modal-card h3 {
+  margin: 0 0 12px;
+}
+
+.error-text {
+  margin: 4px 0;
+  color: #b10e0e;
+  font-size: 0.92rem;
+}
+
+.egg-event img {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  margin: 0 auto 6px;
+  display: block;
+  cursor: pointer;
+}
+
+.egg-event p {
+  margin: 4px 0;
+  line-height: 1.2;
+}
+
+#eggTimer {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+#eggMessage {
+  font-size: 0.86rem;
+  color: #ffe9a8;
+}
+
+.pokemon-image {
+  display: block;
+  width: 160px;
+  height: 160px;
+  margin: 2px auto 12px;
+  image-rendering: pixelated;
+  border-radius: 12px;
+  background: #f0f0f0;
+}
+
+form {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.95rem;
+}
+
+label.inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #cfc7b1;
+  border-radius: 9px;
+  padding: 9px 10px;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 14px;
+  }
+}

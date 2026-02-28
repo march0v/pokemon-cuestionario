@@ -1,0 +1,15 @@
+com\mycompany\pokemon\TestMotor.class
+com\mycompany\pokemon\Main.class
+com\mycompany\pokemon\Pokemon.class
+com\mycompany\pokemon\PreguntaTipoSecundario.class
+com\mycompany\pokemon\PreguntaPorAtributo.class
+com\mycompany\pokemon\PreguntaColor.class
+com\mycompany\pokemon\PreguntaTieneTipoSecundario.class
+com\mycompany\pokemon\PreguntaHabitat.class
+com\mycompany\pokemon\PreguntaEvolucion.class
+com\mycompany\pokemon\PreguntaNombreVocal.class
+com\mycompany\pokemon\MotorPokemon.class
+com\mycompany\pokemon\PreguntaTipo.class
+com\mycompany\pokemon\JuegoAdivinar.class
+com\mycompany\pokemon\PreguntaInteligente.class
+com\mycompany\pokemon\PreguntaNombreLargo.class

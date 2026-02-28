@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adivina el Pokemon</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="hero-top">
+        <h1>Adivina el Pokemon</h1>
+        <button id="btnAdminLogin" class="btn btn-ghost">Iniciar sesion</button>
+      </div>
+      <p>Preguntas inteligentes + aprendizaje</p>
+    </header>
+
+    <section class="card hidden" id="adminPanel">
+      <h2>Panel Administrador</h2>
+      <div class="admin-grid">
+        <label class="inline">
+          <input type="checkbox" id="chkMissingnoEnabled" checked>
+          Activar evento MissingNo (1/20)
+        </label>
+        <label class="inline">
+          <input type="checkbox" id="chkEggEnabled" checked>
+          Activar evento Huevo (1/50)
+        </label>
+      </div>
+      <div class="admin-stats">
+        <p>Partidas finalizadas: <strong id="statGamesFinished">0</strong></p>
+        <p>MissingNo activado: <strong id="statMissingnoTriggered">0</strong></p>
+        <p>Huevo activado: <strong id="statEggTriggered">0</strong></p>
+      </div>
+      <details>
+        <summary>Estadisticas de preguntas</summary>
+        <pre id="questionStatsView">Sin datos.</pre>
+      </details>
+    </section>
+
+    <section class="card" id="questionCard">
+      <h2 id="questionText">Preparando juego...</h2>
+      <div class="actions">
+        <button id="btnSi" class="btn btn-primary">Si</button>
+        <button id="btnNo" class="btn btn-secondary">No</button>
+        <button id="btnReiniciar" class="btn btn-ghost">Reiniciar</button>
+      </div>
+      <p class="hint" id="statusText"></p>
+    </section>
+
+    <section class="card hidden" id="resultCard">
+      <h2 id="resultTitle">Resultado</h2>
+      <img id="pokemonImage" alt="Pokemon" class="pokemon-image hidden">
+      <p id="resultText"></p>
+      <div class="actions">
+        <button id="btnCorrecto" class="btn btn-primary hidden">Si, correcto</button>
+        <button id="btnIncorrecto" class="btn btn-secondary hidden">No, era otro</button>
+        <button id="btnJugarOtra" class="btn btn-ghost">Jugar otra vez</button>
+      </div>
+    </section>
+
+    <section class="card hidden" id="learnCard">
+      <h2>Ensename el Pokemon correcto</h2>
+      <form id="learnForm">
+        <label>Nombre
+          <input id="nuevoNombre" required>
+        </label>
+        <label>Tipo principal
+          <input id="nuevoTipo" required>
+        </label>
+        <label>Tipo secundario (o Ninguno)
+          <input id="nuevoTipoSec" value="Ninguno" required>
+        </label>
+        <label>Color
+          <input id="nuevoColor" required>
+        </label>
+        <label>Habitat
+          <input id="nuevoHabitat" required>
+        </label>
+        <label>Rasgo distintivo
+          <input id="nuevoRasgo" required>
+        </label>
+        <label class="inline">
+          <input type="checkbox" id="nuevoEsEvolucion">
+          Es evolucion
+        </label>
+        <label>Numero Pokedex (opcional)
+          <input id="nuevoDex" type="number" min="0" value="0">
+        </label>
+        <div class="actions">
+          <button type="submit" id="btnGuardarAprendizaje" class="btn btn-primary">Guardar</button>
+          <button type="button" id="btnCancelarAprendizaje" class="btn btn-ghost">Cancelar</button>
+        </div>
+      </form>
+      <p class="hint">Se guarda en tu navegador (localStorage).</p>
+    </section>
+  </main>
+
+  <aside id="eggEvent" class="egg-event hidden" aria-live="polite">
+    <img id="eggImage" src="pokemon/egg.png" alt="Huevo misterioso">
+    <p id="eggTimer">10:00</p>
+    <p id="eggMessage">An egg has appeared.</p>
+  </aside>
+
+  <audio id="missingnoAudio" preload="auto" src="pokemon/missingno-theme.mp3"></audio>
+  <audio id="eggThemeAudio" preload="auto" src="pokemon/egg-theme.mp3"></audio>
+
+  <div id="adminLoginModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <h3>Inicio de sesion administrador</h3>
+      <form id="adminLoginForm">
+        <label>Usuario
+          <input id="adminUser" required autocomplete="username">
+        </label>
+        <label>Contrasena
+          <input id="adminPass" type="password" required autocomplete="current-password">
+        </label>
+        <p id="adminLoginError" class="error-text hidden">Credenciales incorrectas.</p>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Entrar</button>
+          <button type="button" id="btnAdminCancel" class="btn btn-ghost">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
