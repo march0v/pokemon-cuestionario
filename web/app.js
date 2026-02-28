@@ -563,6 +563,7 @@ function applyAnswer(isYes) {
 
 function showOnly(section) {
   if (section !== els.resultCard) {
+    setPageGlitch(false);
     stopMissingnoAudio();
     stopEggThemeAudio();
   }
@@ -768,6 +769,15 @@ function stopMissingnoAudio() {
   }
 }
 
+function setPageGlitch(active) {
+  if (!document || !document.body) return;
+  if (active) {
+    document.body.classList.add("glitch-active");
+    return;
+  }
+  document.body.classList.remove("glitch-active");
+}
+
 function playMissingnoAudio() {
   if (!els.missingnoAudio) return;
   try {
@@ -799,6 +809,7 @@ function showMissingnoEvent() {
   els.pokemonImage.classList.remove("hidden");
   els.btnCorrecto.classList.add("hidden");
   els.btnIncorrecto.classList.add("hidden");
+  setPageGlitch(true);
   playMissingnoAudio();
 }
 
@@ -881,6 +892,7 @@ function showResultList(title, lista) {
 }
 
 function restartGame() {
+  setPageGlitch(false);
   stopMissingnoAudio();
   stopCatMeowAudio();
   state.candidatos = [...state.allPokemon];
@@ -1041,6 +1053,7 @@ function init() {
   buildQuestions();
   wireEvents();
   renderAdminPanel();
+  setPageGlitch(false);
   restartGame();
 }
 

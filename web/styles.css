@@ -26,6 +26,65 @@ body {
   min-height: 100vh;
 }
 
+body.glitch-active {
+  animation: body-glitch-jitter 0.12s steps(2, end) infinite;
+}
+
+body.glitch-active::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.08) 0px,
+      rgba(255, 255, 255, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px
+    );
+  mix-blend-mode: screen;
+  animation: glitch-scan 0.25s linear infinite;
+}
+
+@keyframes body-glitch-jitter {
+  0% {
+    filter: hue-rotate(0deg) contrast(1.08) saturate(1.2);
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-1px, 0);
+  }
+  40% {
+    transform: translate(1px, 1px);
+  }
+  60% {
+    transform: translate(-1px, -1px);
+  }
+  80% {
+    transform: translate(1px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes glitch-scan {
+  0% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.55;
+    transform: translateY(2px);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+}
+
 .app {
   max-width: 760px;
   margin: 0 auto;
@@ -263,5 +322,12 @@ input {
 @media (max-width: 560px) {
   .card {
     padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.glitch-active,
+  body.glitch-active::before {
+    animation: none;
   }
 }
