@@ -40,7 +40,21 @@ const DEFAULT_ADMIN_STATS = {
 const DEFAULT_PANEL_STYLE = {
   color: "#fffdf8",
   opacity: 95,
+  textColor: "#1d1d1d",
+  buttonColor: "#d32f2f",
 };
+
+const DEX_GENERATION_RANGES = [
+  { min: 1, max: 151, generation: 1 },
+  { min: 152, max: 251, generation: 2 },
+  { min: 252, max: 386, generation: 3 },
+  { min: 387, max: 493, generation: 4 },
+  { min: 494, max: 649, generation: 5 },
+  { min: 650, max: 721, generation: 6 },
+  { min: 722, max: 809, generation: 7 },
+  { min: 810, max: 905, generation: 8 },
+  { min: 906, max: 1025, generation: 9 },
+];
 
 const BASE_POKEMON = [
   { nombre: "Pikachu", tipo: "Electrico", tipoSecundario: "Ninguno", color: "Amarillo", habitat: "Bosque", esEvolucion: true, numeroDex: 25 },
@@ -69,6 +83,26 @@ const BASE_POKEMON = [
   { nombre: "Dratini", tipo: "Dragon", tipoSecundario: "Ninguno", color: "Azul", habitat: "Agua", esEvolucion: false, numeroDex: 147 },
   { nombre: "Lapras", tipo: "Hielo", tipoSecundario: "Agua", color: "Azul", habitat: "Agua", esEvolucion: false, numeroDex: 131 },
   { nombre: "Zubat", tipo: "Volador", tipoSecundario: "Veneno", color: "Morado", habitat: "Cueva", esEvolucion: false, numeroDex: 41 },
+  { nombre: "Chikorita", tipo: "Planta", tipoSecundario: "Ninguno", color: "Verde", habitat: "Pradera", esEvolucion: false, numeroDex: 152 },
+  { nombre: "Bayleef", tipo: "Planta", tipoSecundario: "Ninguno", color: "Verde", habitat: "Bosque", esEvolucion: true, numeroDex: 153 },
+  { nombre: "Cyndaquil", tipo: "Fuego", tipoSecundario: "Ninguno", color: "Azul", habitat: "Montana", esEvolucion: false, numeroDex: 155 },
+  { nombre: "Totodile", tipo: "Agua", tipoSecundario: "Ninguno", color: "Azul", habitat: "Agua", esEvolucion: false, numeroDex: 158 },
+  { nombre: "Sentret", tipo: "Normal", tipoSecundario: "Ninguno", color: "Cafe", habitat: "Pradera", esEvolucion: false, numeroDex: 161 },
+  { nombre: "Hoothoot", tipo: "Normal", tipoSecundario: "Volador", color: "Cafe", habitat: "Bosque", esEvolucion: false, numeroDex: 163 },
+  { nombre: "Mareep", tipo: "Electrico", tipoSecundario: "Ninguno", color: "Blanco", habitat: "Pradera", esEvolucion: false, numeroDex: 179 },
+  { nombre: "Wooper", tipo: "Agua", tipoSecundario: "Tierra", color: "Azul", habitat: "Agua", esEvolucion: false, numeroDex: 194 },
+  { nombre: "Espeon", tipo: "Psiquico", tipoSecundario: "Ninguno", color: "Morado", habitat: "Ciudad", esEvolucion: true, numeroDex: 196 },
+  { nombre: "Umbreon", tipo: "Siniestro", tipoSecundario: "Ninguno", color: "Negro", habitat: "Ciudad", esEvolucion: true, numeroDex: 197 },
+  { nombre: "Murkrow", tipo: "Siniestro", tipoSecundario: "Volador", color: "Negro", habitat: "Ciudad", esEvolucion: false, numeroDex: 198 },
+  { nombre: "Misdreavus", tipo: "Fantasma", tipoSecundario: "Ninguno", color: "Morado", habitat: "Cueva", esEvolucion: false, numeroDex: 200 },
+  { nombre: "Pineco", tipo: "Bicho", tipoSecundario: "Ninguno", color: "Verde", habitat: "Bosque", esEvolucion: false, numeroDex: 204 },
+  { nombre: "Gligar", tipo: "Tierra", tipoSecundario: "Volador", color: "Morado", habitat: "Montana", esEvolucion: false, numeroDex: 207 },
+  { nombre: "Sneasel", tipo: "Siniestro", tipoSecundario: "Hielo", color: "Negro", habitat: "Montana", esEvolucion: false, numeroDex: 215 },
+  { nombre: "Swinub", tipo: "Hielo", tipoSecundario: "Tierra", color: "Cafe", habitat: "Montana", esEvolucion: false, numeroDex: 220 },
+  { nombre: "Skarmory", tipo: "Acero", tipoSecundario: "Volador", color: "Gris", habitat: "Montana", esEvolucion: false, numeroDex: 227 },
+  { nombre: "Houndour", tipo: "Fuego", tipoSecundario: "Siniestro", color: "Negro", habitat: "Cueva", esEvolucion: false, numeroDex: 228 },
+  { nombre: "Phanpy", tipo: "Tierra", tipoSecundario: "Ninguno", color: "Azul", habitat: "Pradera", esEvolucion: false, numeroDex: 231 },
+  { nombre: "Larvitar", tipo: "Roca", tipoSecundario: "Tierra", color: "Verde", habitat: "Montana", esEvolucion: false, numeroDex: 246 },
 ];
 
 const BASE_RASGO_BY_NAME = {
@@ -106,6 +140,8 @@ const els = {
   btnCloseAppearance: document.getElementById("btnCloseAppearance"),
   bgSelect: document.getElementById("bgSelect"),
   panelColor: document.getElementById("panelColor"),
+  textColor: document.getElementById("textColor"),
+  buttonColor: document.getElementById("buttonColor"),
   panelOpacity: document.getElementById("panelOpacity"),
   panelOpacityValue: document.getElementById("panelOpacityValue"),
   btnResetPanelStyle: document.getElementById("btnResetPanelStyle"),
@@ -148,6 +184,7 @@ const els = {
   btnCancelarAprendizaje: document.getElementById("btnCancelarAprendizaje"),
   nuevoNombre: document.getElementById("nuevoNombre"),
   nuevoTipo: document.getElementById("nuevoTipo"),
+  nuevoGeneracion: document.getElementById("nuevoGeneracion"),
   nuevoTipoSec: document.getElementById("nuevoTipoSec"),
   nuevoColor: document.getElementById("nuevoColor"),
   nuevoHabitat: document.getElementById("nuevoHabitat"),
@@ -185,6 +222,28 @@ function normalizeText(str, fallback = "") {
   const txt = (str || "").trim();
   if (!txt) return fallback;
   return txt.charAt(0).toUpperCase() + txt.slice(1);
+}
+
+function inferGenerationFromDex(dex) {
+  const n = Number(dex);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+
+  const found = DEX_GENERATION_RANGES.find((r) => n >= r.min && n <= r.max);
+  return found ? found.generation : 0;
+}
+
+function normalizeGeneration(rawGeneration, dex) {
+  const n = Number(rawGeneration);
+  if (Number.isFinite(n) && n >= 1 && n <= 9) {
+    return Math.round(n);
+  }
+
+  const inferred = inferGenerationFromDex(dex);
+  if (inferred > 0) {
+    return inferred;
+  }
+
+  return 1;
 }
 
 function slug(str) {
@@ -276,7 +335,12 @@ async function validarPokemonReal(nuevo) {
     return { ok: false, mensaje: "No pude verificar el sprite oficial en la fuente de origen." };
   }
 
-  return { ok: true, dexOficial: data.id, nombreOficial: nombreApi };
+  return {
+    ok: true,
+    dexOficial: data.id,
+    nombreOficial: nombreApi,
+    generacionOficial: inferGenerationFromDex(data.id),
+  };
 }
 
 function setLearningBusy(isBusy) {
@@ -305,14 +369,14 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function normalizeHexColor(value) {
+function normalizeHexColor(value, fallback = DEFAULT_PANEL_STYLE.color) {
   const v = String(value || "").trim();
   const valid = /^#[0-9a-fA-F]{6}$/.test(v);
-  return valid ? v.toLowerCase() : DEFAULT_PANEL_STYLE.color;
+  return valid ? v.toLowerCase() : fallback;
 }
 
 function hexToRgb(hex) {
-  const normalized = normalizeHexColor(hex);
+  const normalized = normalizeHexColor(hex, "#000000");
   return {
     r: parseInt(normalized.slice(1, 3), 16),
     g: parseInt(normalized.slice(3, 5), 16),
@@ -320,11 +384,36 @@ function hexToRgb(hex) {
   };
 }
 
+function toHexChannel(value) {
+  return clamp(Math.round(value), 0, 255).toString(16).padStart(2, "0");
+}
+
+function rgbToHex(rgb) {
+  return `#${toHexChannel(rgb.r)}${toHexChannel(rgb.g)}${toHexChannel(rgb.b)}`;
+}
+
+function shiftHexColor(hex, delta) {
+  const rgb = hexToRgb(hex);
+  return rgbToHex({
+    r: rgb.r + delta,
+    g: rgb.g + delta,
+    b: rgb.b + delta,
+  });
+}
+
+function getReadableTextColor(hex) {
+  const rgb = hexToRgb(hex);
+  const luminance = (0.299 * rgb.r) + (0.587 * rgb.g) + (0.114 * rgb.b);
+  return luminance >= 150 ? "#111111" : "#ffffff";
+}
+
 function normalizePanelStyle(raw) {
-  const color = normalizeHexColor(raw?.color);
+  const color = normalizeHexColor(raw?.color, DEFAULT_PANEL_STYLE.color);
+  const textColor = normalizeHexColor(raw?.textColor, DEFAULT_PANEL_STYLE.textColor);
+  const buttonColor = normalizeHexColor(raw?.buttonColor, DEFAULT_PANEL_STYLE.buttonColor);
   const opacityNum = Number(raw?.opacity);
   const opacity = Number.isFinite(opacityNum) ? clamp(Math.round(opacityNum), 0, 100) : DEFAULT_PANEL_STYLE.opacity;
-  return { color, opacity };
+  return { color, opacity, textColor, buttonColor };
 }
 
 function applyPanelStyle(rawStyle) {
@@ -335,13 +424,37 @@ function applyPanelStyle(rawStyle) {
   const alpha = style.opacity / 100;
   const borderAlpha = Math.min(1, alpha + 0.2);
   const shadowAlpha = Math.min(0.32, 0.08 + (alpha * 0.24));
+  const textRgb = hexToRgb(style.textColor);
+  const btnPrimary = style.buttonColor;
+  const btnPrimaryHover = shiftHexColor(style.buttonColor, -24);
+  const btnSecondary = shiftHexColor(style.buttonColor, -44);
+  const btnSecondaryHover = shiftHexColor(style.buttonColor, -64);
+  const btnGhost = shiftHexColor(style.buttonColor, 88);
+  const btnGhostHover = shiftHexColor(style.buttonColor, 68);
 
   document.documentElement.style.setProperty("--panel-bg", `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha.toFixed(2)})`);
   document.documentElement.style.setProperty("--panel-border-color", `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${borderAlpha.toFixed(2)})`);
   document.documentElement.style.setProperty("--panel-shadow", `0 10px 25px rgba(0, 0, 0, ${shadowAlpha.toFixed(2)})`);
+  document.documentElement.style.setProperty("--text", style.textColor);
+  document.documentElement.style.setProperty("--muted", `rgba(${textRgb.r}, ${textRgb.g}, ${textRgb.b}, 0.72)`);
+  document.documentElement.style.setProperty("--btn-primary-bg", btnPrimary);
+  document.documentElement.style.setProperty("--btn-primary-hover", btnPrimaryHover);
+  document.documentElement.style.setProperty("--btn-primary-text", getReadableTextColor(btnPrimary));
+  document.documentElement.style.setProperty("--btn-secondary-bg", btnSecondary);
+  document.documentElement.style.setProperty("--btn-secondary-hover", btnSecondaryHover);
+  document.documentElement.style.setProperty("--btn-secondary-text", getReadableTextColor(btnSecondary));
+  document.documentElement.style.setProperty("--btn-ghost-bg", btnGhost);
+  document.documentElement.style.setProperty("--btn-ghost-hover", btnGhostHover);
+  document.documentElement.style.setProperty("--btn-ghost-text", getReadableTextColor(btnGhost));
 
   if (els.panelColor) {
     els.panelColor.value = style.color;
+  }
+  if (els.textColor) {
+    els.textColor.value = style.textColor;
+  }
+  if (els.buttonColor) {
+    els.buttonColor.value = style.buttonColor;
   }
   if (els.panelOpacity) {
     els.panelOpacity.value = String(style.opacity);
@@ -360,6 +473,15 @@ function loadPanelStyle() {
 
 function persistCurrentPanelStyle() {
   writeJson(STORAGE_KEYS.panelStyle, state.panelStyle);
+}
+
+function getAppearanceStyleFromInputs() {
+  return {
+    color: els.panelColor?.value || DEFAULT_PANEL_STYLE.color,
+    textColor: els.textColor?.value || DEFAULT_PANEL_STYLE.textColor,
+    buttonColor: els.buttonColor?.value || DEFAULT_PANEL_STYLE.buttonColor,
+    opacity: Number(els.panelOpacity?.value || DEFAULT_PANEL_STYLE.opacity),
+  };
 }
 
 function applyBackgroundChoice(choice) {
@@ -502,20 +624,23 @@ function getDefaultRasgo(nombre) {
 
 function sanitizePokemon(raw) {
   const nombre = normalizeText(raw.nombre, "");
+  const numeroDex = Math.max(0, Number(raw.numeroDex) || 0);
   return {
     nombre,
     tipo: normalizeText(raw.tipo, "Normal"),
+    generacion: normalizeGeneration(raw.generacion, numeroDex),
     tipoSecundario: normalizeText(raw.tipoSecundario, "Ninguno"),
     color: normalizeText(raw.color, "Desconocido"),
     habitat: normalizeText(raw.habitat, "Desconocido"),
     rasgo: normalizeText(raw.rasgo, getDefaultRasgo(nombre)),
     esEvolucion: !!raw.esEvolucion,
-    numeroDex: Math.max(0, Number(raw.numeroDex) || 0),
+    numeroDex,
   };
 }
 
 function featureSignature(p) {
   return [
+    Number(p.generacion || 1),
     p.tipo.toLowerCase(),
     p.tipoSecundario.toLowerCase(),
     p.color.toLowerCase(),
@@ -537,6 +662,7 @@ function loadData() {
 }
 
 function buildQuestions() {
+  const generaciones = new Set();
   const tipos = new Set();
   const tiposSec = new Set();
   const colores = new Set();
@@ -544,6 +670,7 @@ function buildQuestions() {
   const rasgos = new Set();
 
   state.allPokemon.forEach((p) => {
+    generaciones.add(Number(p.generacion || 1));
     tipos.add(p.tipo);
     tiposSec.add(p.tipoSecundario);
     colores.add(p.color);
@@ -552,6 +679,17 @@ function buildQuestions() {
   });
 
   const q = [];
+  [...generaciones]
+    .filter((g) => Number.isFinite(g) && g > 0)
+    .sort((a, b) => a - b)
+    .forEach((generacion) => {
+      q.push({
+        id: `generacion_${generacion}`,
+        texto: `Es de la generacion ${generacion}?`,
+        coincide: (p) => Number(p.generacion || 1) === generacion,
+      });
+    });
+
   [...tipos].sort().forEach((tipo) => {
     q.push({
       id: `tipo_${slug(tipo)}`,
@@ -1031,6 +1169,7 @@ function startLearningForm() {
   showOnly(els.learnCard);
   els.nuevoNombre.value = "";
   els.nuevoTipo.value = "";
+  els.nuevoGeneracion.value = "2";
   els.nuevoTipoSec.value = "Ninguno";
   els.nuevoColor.value = "";
   els.nuevoHabitat.value = "";
@@ -1054,6 +1193,7 @@ async function saveLearnedPokemon(ev) {
   const nuevo = {
     nombre,
     tipo: normalizeText(els.nuevoTipo.value, "Normal"),
+    generacion: normalizeGeneration(els.nuevoGeneracion.value, Number(els.nuevoDex.value) || 0),
     tipoSecundario: normalizeText(els.nuevoTipoSec.value, "Ninguno"),
     color: normalizeText(els.nuevoColor.value, "Desconocido"),
     habitat: normalizeText(els.nuevoHabitat.value, "Desconocido"),
@@ -1071,6 +1211,12 @@ async function saveLearnedPokemon(ev) {
   }
 
   nuevo.numeroDex = validacion.dexOficial;
+  const generacionOficial = Number(validacion.generacionOficial || 0);
+  let generacionAjustada = false;
+  if (generacionOficial > 0) {
+    generacionAjustada = Number(nuevo.generacion) !== generacionOficial;
+    nuevo.generacion = generacionOficial;
+  }
   if (normalizeCompare(validacion.nombreOficial) === normalizeCompare(nuevo.nombre)) {
     nuevo.nombre = validacion.nombreOficial;
   }
@@ -1098,7 +1244,10 @@ async function saveLearnedPokemon(ev) {
   loadData();
   buildQuestions();
   restartGame();
-  alert(`Aprendi a ${nuevo.nombre} (Dex ${nuevo.numeroDex}). Ya se usa en el juego.`);
+  const ajusteGeneracionTexto = generacionAjustada
+    ? ` Se ajusto a Gen ${nuevo.generacion} segun su Dex oficial.`
+    : "";
+  alert(`Aprendi a ${nuevo.nombre} (Dex ${nuevo.numeroDex}, Gen ${nuevo.generacion}). Ya se usa en el juego.${ajusteGeneracionTexto}`);
 }
 
 function wireEvents() {
@@ -1128,20 +1277,28 @@ function wireEvents() {
 
   if (els.panelColor) {
     els.panelColor.addEventListener("input", () => {
-      applyPanelStyle({
-        color: els.panelColor.value,
-        opacity: Number(els.panelOpacity?.value || DEFAULT_PANEL_STYLE.opacity),
-      });
+      applyPanelStyle(getAppearanceStyleFromInputs());
+      persistCurrentPanelStyle();
+    });
+  }
+
+  if (els.textColor) {
+    els.textColor.addEventListener("input", () => {
+      applyPanelStyle(getAppearanceStyleFromInputs());
+      persistCurrentPanelStyle();
+    });
+  }
+
+  if (els.buttonColor) {
+    els.buttonColor.addEventListener("input", () => {
+      applyPanelStyle(getAppearanceStyleFromInputs());
       persistCurrentPanelStyle();
     });
   }
 
   if (els.panelOpacity) {
     els.panelOpacity.addEventListener("input", () => {
-      applyPanelStyle({
-        color: els.panelColor?.value || DEFAULT_PANEL_STYLE.color,
-        opacity: Number(els.panelOpacity.value),
-      });
+      applyPanelStyle(getAppearanceStyleFromInputs());
       persistCurrentPanelStyle();
     });
   }

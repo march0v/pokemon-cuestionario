@@ -84,6 +84,9 @@
         <label>Tipo principal
           <input id="nuevoTipo" required>
         </label>
+        <label>Generacion
+          <input id="nuevoGeneracion" type="number" min="1" max="9" value="2" required>
+        </label>
         <label>Tipo secundario (o Ninguno)
           <input id="nuevoTipoSec" value="Ninguno" required>
         </label>
@@ -147,12 +150,18 @@
         <label>Color paneles
           <input id="panelColor" type="color" value="#fffdf8">
         </label>
+        <label>Color letras
+          <input id="textColor" type="color" value="#1d1d1d">
+        </label>
+        <label>Color botones
+          <input id="buttonColor" type="color" value="#d32f2f">
+        </label>
         <label>Transparencia paneles
           <input id="panelOpacity" type="range" min="0" max="100" value="95">
         </label>
         <p class="hint">Visibilidad: <strong id="panelOpacityValue">95%</strong></p>
         <div class="actions">
-          <button id="btnResetPanelStyle" class="btn btn-ghost" type="button">Restablecer paneles</button>
+          <button id="btnResetPanelStyle" class="btn btn-ghost" type="button">Restablecer apariencia</button>
           <button id="btnCloseAppearance" class="btn btn-primary" type="button">Cerrar</button>
         </div>
       </div>

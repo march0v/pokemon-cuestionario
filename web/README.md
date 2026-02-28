@@ -3,7 +3,7 @@
 Esta carpeta contiene una version web del juego.
 
 - Incluye selector de fondo con varias opciones (predeterminado + fondos personalizados).
-- La personalizacion de paneles (color/transparencia) se abre desde el boton `Configuracion` y se guarda en `localStorage`.
+- La personalizacion de apariencia se abre desde `Configuracion` y permite cambiar paneles, transparencia, color de letras y color de botones (se guarda en `localStorage`).
 
 ## Ejecutar
 
@@ -29,6 +29,9 @@ Luego abre `http://localhost:8080`.
 - Cada Pokemon usa un `rasgo distintivo` para evitar duplicados de caracteristicas.
 - Al agregar un Pokemon nuevo, se valida online contra `PokeAPI` y el sprite oficial de origen.
 - Si el `numeroDex` no coincide con el nombre real, no se guarda.
+- El juego ya distingue Pokemon por `generacion` (incluye preguntas de generacion para descartar mas rapido).
+- Se agregaron Pokemon de segunda generacion a la base inicial.
+- Al aprender un Pokemon, la generacion se guarda y se ajusta automaticamente segun su `numeroDex` oficial.
 - Evento especial: al terminar una partida hay `1/20` de probabilidad de que aparezca `MissingNo`.
 - Para ese evento se usan `web/pokemon/missingno.png` y `web/pokemon/missingno-theme.mp3`.
 - Evento huevo: al terminar una partida hay `1/50` de probabilidad de activar un huevo en la esquina inferior derecha.

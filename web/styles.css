@@ -10,6 +10,15 @@
   --primary-hover: #b71c1c;
   --secondary: #1565c0;
   --secondary-hover: #0d47a1;
+  --btn-primary-bg: var(--primary);
+  --btn-primary-hover: var(--primary-hover);
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: var(--secondary);
+  --btn-secondary-hover: var(--secondary-hover);
+  --btn-secondary-text: #ffffff;
+  --btn-ghost-bg: #ece6d6;
+  --btn-ghost-hover: #e2dac6;
+  --btn-ghost-text: #3d3d3d;
   --border: #e5dcc7;
 }
 
@@ -184,30 +193,30 @@ body.glitch-active::before {
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: #fff;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
 }
 
 .btn-primary:hover {
-  background: var(--primary-hover);
+  background: var(--btn-primary-hover);
 }
 
 .btn-secondary {
-  background: var(--secondary);
-  color: #fff;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
 }
 
 .btn-secondary:hover {
-  background: var(--secondary-hover);
+  background: var(--btn-secondary-hover);
 }
 
 .btn-ghost {
-  background: #ece6d6;
-  color: #3d3d3d;
+  background: var(--btn-ghost-bg);
+  color: var(--btn-ghost-text);
 }
 
 .btn-ghost:hover {
-  background: #e2dac6;
+  background: var(--btn-ghost-hover);
 }
 
 .hint {
