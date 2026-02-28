@@ -23,6 +23,7 @@ Luego abre `http://localhost:8080`.
 - Los Pokemon que agregas se guardan en `localStorage`.
 - Estadisticas de preguntas tambien se guardan en `localStorage`.
 - Hay panel de administrador para activar/desactivar eventos y ver estadisticas.
+- Hay un boton `Logros` con desbloqueables por eventos (inician bloqueados y se guardan en `localStorage`).
 - Credenciales admin por defecto: usuario `admin`, contrasena `admin123`.
 - Al activar un evento desde admin, se fuerza en el proximo fin de partida para verificar rapido que funciona.
 - Si limpias datos del navegador, se reinicia ese aprendizaje.
@@ -34,6 +35,7 @@ Luego abre `http://localhost:8080`.
 - Al aprender un Pokemon, la generacion se guarda y se ajusta automaticamente segun su `numeroDex` oficial.
 - Evento especial: al terminar una partida hay `1/20` de probabilidad de que aparezca `MissingNo`.
 - Para ese evento se usan `web/pokemon/missingno.png` y `web/pokemon/missingno-theme.mp3`.
+- Evento Pikachu: cuando confirmas que adivino a Pikachu, hay `1/4` de probabilidad de mostrar su GIF y reproducir `Victory Royale - Fortnite - Gaming Sound Effects.mp3`.
 - Evento huevo: al terminar una partida hay `1/50` de probabilidad de activar un huevo en la esquina inferior derecha.
 - Usa `web/pokemon/egg.png` + `web/pokemon/egg-theme.mp3`, reproduce un maullido aleatorio de `web/pokemon/cat-1.mp3` o `web/pokemon/cat-2.mp3` y arranca un contador de `10:00`.
 - Si haces click en la imagen del huevo, suena otro maullido aleatorio desde cualquier pantalla.

@@ -13,6 +13,7 @@
         <h1>Adivina el Pokemon</h1>
         <div class="hero-controls">
           <button id="btnOpenAppearance" class="btn btn-ghost">Configuracion</button>
+          <button id="btnOpenAchievements" class="btn btn-ghost">Logros 0/3</button>
           <label class="bg-picker-label" for="bgSelect">Fondo</label>
           <select id="bgSelect" class="bg-picker">
             <option value="default">Predeterminado</option>
@@ -164,6 +165,17 @@
           <button id="btnResetPanelStyle" class="btn btn-ghost" type="button">Restablecer apariencia</button>
           <button id="btnCloseAppearance" class="btn btn-primary" type="button">Cerrar</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="achievementsModal" class="modal hidden" aria-modal="true" role="dialog">
+    <div class="modal-card">
+      <h3>Logros</h3>
+      <p id="achievementsProgress" class="hint">0/3 desbloqueados</p>
+      <ul id="achievementsList" class="achievement-list"></ul>
+      <div class="actions">
+        <button id="btnCloseAchievements" class="btn btn-primary" type="button">Cerrar</button>
       </div>
     </div>
   </div>

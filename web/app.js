@@ -3,6 +3,7 @@ const STORAGE_KEYS = {
   questionStats: "pokemon.questionStats.v1",
   adminSettings: "pokemon.admin.settings.v1",
   adminStats: "pokemon.admin.stats.v1",
+  achievements: "pokemon.achievements.v1",
   backgroundChoice: "pokemon.ui.background.v1",
   panelStyle: "pokemon.ui.panelStyle.v1",
 };
@@ -10,6 +11,9 @@ const POKEAPI_BASE = "https://pokeapi.co/api/v2/pokemon";
 const SPRITE_ORIGEN_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon";
 const MISSINGNO_CHANCE_DENOMINATOR = 20;
 const MISSINGNO_IMAGE_PATH = "pokemon/missingno.png";
+const PIKACHU_EVENT_CHANCE_DENOMINATOR = 4;
+const PIKACHU_EVENT_IMAGE_PATH = "pokemon/pikachu baile.gif";
+const PIKACHU_EVENT_AUDIO_PATH = "pokemon/Victory Royale - Fortnite - Gaming Sound Effects.mp3";
 const EGG_CHANCE_DENOMINATOR = 50;
 const EGG_COUNTDOWN_SECONDS = 10 * 60;
 const ADMIN_USERNAME = "admin";
@@ -36,6 +40,28 @@ const DEFAULT_ADMIN_STATS = {
   gamesFinished: 0,
   missingnoTriggered: 0,
   eggTriggered: 0,
+};
+const ACHIEVEMENT_DEFINITIONS = [
+  {
+    id: "missingno",
+    title: "Anomalia MissingNo",
+    description: "Desbloquea el evento MissingNo.",
+  },
+  {
+    id: "egg",
+    title: "Incubadora",
+    description: "Desbloquea el evento del huevo.",
+  },
+  {
+    id: "pikachuDance",
+    title: "Pikachu Dance",
+    description: "Activa el baile especial de Pikachu.",
+  },
+];
+const DEFAULT_ACHIEVEMENTS = {
+  missingno: false,
+  egg: false,
+  pikachuDance: false,
 };
 const DEFAULT_PANEL_STYLE = {
   color: "#fffdf8",
@@ -136,8 +162,13 @@ const BASE_RASGO_BY_NAME = {
 
 const els = {
   btnOpenAppearance: document.getElementById("btnOpenAppearance"),
+  btnOpenAchievements: document.getElementById("btnOpenAchievements"),
   appearanceModal: document.getElementById("appearanceModal"),
+  achievementsModal: document.getElementById("achievementsModal"),
   btnCloseAppearance: document.getElementById("btnCloseAppearance"),
+  btnCloseAchievements: document.getElementById("btnCloseAchievements"),
+  achievementsList: document.getElementById("achievementsList"),
+  achievementsProgress: document.getElementById("achievementsProgress"),
   bgSelect: document.getElementById("bgSelect"),
   panelColor: document.getElementById("panelColor"),
   textColor: document.getElementById("textColor"),
@@ -209,6 +240,8 @@ const state = {
   eggEndsAt: 0,
   eggTimerIntervalId: null,
   activeCatAudio: null,
+  activePikachuAudio: null,
+  achievements: { ...DEFAULT_ACHIEVEMENTS },
   isAdmin: false,
   adminSettings: { ...DEFAULT_ADMIN_SETTINGS },
   adminStats: { ...DEFAULT_ADMIN_STATS },
@@ -517,6 +550,71 @@ function closeAppearanceModal() {
   els.appearanceModal.classList.add("hidden");
 }
 
+function openAchievementsModal() {
+  if (!els.achievementsModal) return;
+  renderAchievements();
+  els.achievementsModal.classList.remove("hidden");
+}
+
+function closeAchievementsModal() {
+  if (!els.achievementsModal) return;
+  els.achievementsModal.classList.add("hidden");
+}
+
+function normalizeAchievements(raw) {
+  return ACHIEVEMENT_DEFINITIONS.reduce((acc, achievement) => {
+    acc[achievement.id] = !!raw?.[achievement.id];
+    return acc;
+  }, { ...DEFAULT_ACHIEVEMENTS });
+}
+
+function loadAchievements() {
+  const loaded = readJson(STORAGE_KEYS.achievements, DEFAULT_ACHIEVEMENTS);
+  state.achievements = normalizeAchievements(loaded);
+}
+
+function saveAchievements() {
+  writeJson(STORAGE_KEYS.achievements, state.achievements);
+}
+
+function countUnlockedAchievements() {
+  return ACHIEVEMENT_DEFINITIONS.filter((achievement) => !!state.achievements[achievement.id]).length;
+}
+
+function renderAchievements() {
+  const unlocked = countUnlockedAchievements();
+  const total = ACHIEVEMENT_DEFINITIONS.length;
+
+  if (els.btnOpenAchievements) {
+    els.btnOpenAchievements.textContent = `Logros ${unlocked}/${total}`;
+  }
+  if (els.achievementsProgress) {
+    els.achievementsProgress.textContent = `${unlocked}/${total} desbloqueados`;
+  }
+  if (!els.achievementsList) return;
+
+  els.achievementsList.innerHTML = ACHIEVEMENT_DEFINITIONS.map((achievement) => {
+    const isUnlocked = !!state.achievements[achievement.id];
+    const statusText = isUnlocked ? "Desbloqueado" : "Bloqueado";
+    const statusClass = isUnlocked ? "achievement-unlocked" : "achievement-locked";
+    return `
+      <li class="achievement-item ${statusClass}">
+        <strong>${achievement.title}</strong>
+        <p>${achievement.description}</p>
+        <span>${statusText}</span>
+      </li>
+    `;
+  }).join("");
+}
+
+function unlockAchievement(achievementId) {
+  if (!Object.prototype.hasOwnProperty.call(state.achievements, achievementId)) return;
+  if (state.achievements[achievementId]) return;
+  state.achievements[achievementId] = true;
+  saveAchievements();
+  renderAchievements();
+}
+
 function loadAdminState() {
   const loadedSettings = readJson(STORAGE_KEYS.adminSettings, DEFAULT_ADMIN_SETTINGS);
   const loadedStats = readJson(STORAGE_KEYS.adminStats, DEFAULT_ADMIN_STATS);
@@ -822,6 +920,7 @@ function showOnly(section) {
     setPageGlitch(false);
     stopMissingnoAudio();
     stopEggThemeAudio();
+    stopPikachuEventAudio();
   }
   [els.questionCard, els.resultCard, els.learnCard].forEach((el) => el.classList.add("hidden"));
   section.classList.remove("hidden");
@@ -862,6 +961,33 @@ function playCatMeow() {
   try {
     const audio = new Audio(randomPath);
     state.activeCatAudio = audio;
+    const promise = audio.play();
+    if (promise && typeof promise.catch === "function") {
+      promise.catch(() => {
+        // Puede bloquearse por politica de autoplay.
+      });
+    }
+  } catch {
+    // No-op
+  }
+}
+
+function stopPikachuEventAudio() {
+  if (!state.activePikachuAudio) return;
+  try {
+    state.activePikachuAudio.pause();
+    state.activePikachuAudio.currentTime = 0;
+  } catch {
+    // No-op
+  }
+  state.activePikachuAudio = null;
+}
+
+function playPikachuEventAudio() {
+  stopPikachuEventAudio();
+  try {
+    const audio = new Audio(PIKACHU_EVENT_AUDIO_PATH);
+    state.activePikachuAudio = audio;
     const promise = audio.play();
     if (promise && typeof promise.catch === "function") {
       promise.catch(() => {
@@ -958,6 +1084,7 @@ function updateEggCountdownView() {
 }
 
 function startEggCountdown() {
+  unlockAchievement("egg");
   state.eggActive = true;
   state.eggHatched = false;
   state.eggEndsAt = Date.now() + (EGG_COUNTDOWN_SECONDS * 1000);
@@ -1058,6 +1185,8 @@ function shouldActivateMissingno() {
 }
 
 function showMissingnoEvent() {
+  unlockAchievement("missingno");
+  stopPikachuEventAudio();
   showOnly(els.resultCard);
   els.resultTitle.textContent = "ERROR ???";
   els.resultText.textContent = "Aparecio MISSINGNO. (1/20)";
@@ -1067,6 +1196,25 @@ function showMissingnoEvent() {
   els.btnIncorrecto.classList.add("hidden");
   setPageGlitch(true);
   playMissingnoAudio();
+}
+
+function shouldActivatePikachuEvent(pokemon) {
+  if (!pokemon) return false;
+  const isPikachu = normalizeCompare(pokemon.nombre) === "pikachu";
+  if (!isPikachu) return false;
+  return Math.floor(Math.random() * PIKACHU_EVENT_CHANCE_DENOMINATOR) === 0;
+}
+
+function showPikachuEvent() {
+  unlockAchievement("pikachuDance");
+  showOnly(els.resultCard);
+  els.resultTitle.textContent = "Pikachu Event";
+  els.resultText.textContent = "Pikachu se puso a bailar. (1/4)";
+  els.pokemonImage.src = PIKACHU_EVENT_IMAGE_PATH;
+  els.pokemonImage.classList.remove("hidden");
+  els.btnCorrecto.classList.add("hidden");
+  els.btnIncorrecto.classList.add("hidden");
+  playPikachuEventAudio();
 }
 
 function maybeTriggerMissingnoOnEnd() {
@@ -1151,6 +1299,7 @@ function restartGame() {
   setPageGlitch(false);
   stopMissingnoAudio();
   stopCatMeowAudio();
+  stopPikachuEventAudio();
   state.candidatos = [...state.allPokemon];
   state.usadas = new Set();
   state.preguntaActual = null;
@@ -1254,13 +1403,26 @@ function wireEvents() {
   if (els.btnOpenAppearance) {
     els.btnOpenAppearance.addEventListener("click", openAppearanceModal);
   }
+  if (els.btnOpenAchievements) {
+    els.btnOpenAchievements.addEventListener("click", openAchievementsModal);
+  }
   if (els.btnCloseAppearance) {
     els.btnCloseAppearance.addEventListener("click", closeAppearanceModal);
+  }
+  if (els.btnCloseAchievements) {
+    els.btnCloseAchievements.addEventListener("click", closeAchievementsModal);
   }
   if (els.appearanceModal) {
     els.appearanceModal.addEventListener("click", (ev) => {
       if (ev.target === els.appearanceModal) {
         closeAppearanceModal();
+      }
+    });
+  }
+  if (els.achievementsModal) {
+    els.achievementsModal.addEventListener("click", (ev) => {
+      if (ev.target === els.achievementsModal) {
+        closeAchievementsModal();
       }
     });
   }
@@ -1328,6 +1490,7 @@ function wireEvents() {
     if (ev.key === "Escape") {
       closeAdminLoginModal();
       closeAppearanceModal();
+      closeAchievementsModal();
     }
   });
   els.chkMissingnoEnabled.addEventListener("change", () => {
@@ -1363,6 +1526,10 @@ function wireEvents() {
   els.btnReiniciar.addEventListener("click", restartGame);
   els.btnJugarOtra.addEventListener("click", restartGame);
   els.btnCorrecto.addEventListener("click", () => {
+    if (shouldActivatePikachuEvent(state.ultimoCandidato)) {
+      showPikachuEvent();
+      return;
+    }
     alert(`Genial. Adivine: ${state.ultimoCandidato?.nombre || ""}`);
     restartGame();
   });
@@ -1378,10 +1545,12 @@ function init() {
   loadBackgroundChoice();
   loadPanelStyle();
   loadAdminState();
+  loadAchievements();
   loadData();
   buildQuestions();
   wireEvents();
   renderAdminPanel();
+  renderAchievements();
   setPageGlitch(false);
   restartGame();
 }
